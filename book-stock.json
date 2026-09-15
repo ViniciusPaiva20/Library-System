@@ -1,0 +1,17 @@
+[ {
+  "author" : "Teste",
+  "bookGenre" : "DRAMA",
+  "isbn" : "BC1020",
+  "publisher" : "Pub",
+  "recommendAge" : "Livre",
+  "releaseDate" : "21/03/2003",
+  "title" : "Teste 1"
+}, {
+  "author" : "Master",
+  "bookGenre" : "TERROR",
+  "isbn" : "BC4010",
+  "publisher" : "Pub",
+  "recommendAge" : "Livre",
+  "releaseDate" : "04/07/2006",
+  "title" : "Teste 2"
+} ]
