@@ -1,55 +1,50 @@
 package br.com.librarysystem.model.entities;
 
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
+import br.com.librarysystem.model.enums.BookStatus;
+
+import java.util.Locale;
 
 public class BookOrder {
 
-    private Renter renter;
-    private List<Book> rentedBooks;
-    private LocalDate rentalDate;
-    private LocalDate rentRefund;
+    private Book book;
+    private Integer quantityBook;
+    private BookStatus bookStatus;
 
     public BookOrder() {
     }
 
-    public BookOrder(Renter renter, LocalDate rentalDate, LocalDate rentRefund) {
-        this.renter = renter;
-        this.rentalDate = rentalDate;
-        this.rentRefund = rentRefund;
+    public BookOrder(Book book, int quantityBook, BookStatus bookStatus) {
+        this.book = book;
+        this.quantityBook = quantityBook;
+        this.bookStatus = bookStatus;
     }
 
-    public Renter getRenter() {
-        return renter;
+    public Book getBook() {
+        return book;
     }
 
-    public List<Book> getRentedBooks() {
-        return Collections.unmodifiableList(rentedBooks);
+    public void setBook(Book book) {
+        this.book = book;
     }
 
-    public void setRentedBooks(List<Book> rentedBooks) {
-        this.rentedBooks = rentedBooks;
+    public Integer getQuantityBook() {
+        return quantityBook;
     }
 
-    public LocalDate getRentalDate() {
-        return rentalDate;
+    public void setQuantityBook(Integer quantityBook) {
+        this.quantityBook = quantityBook;
     }
 
-    public void setRentalDate(LocalDate rentalDate) {
-        this.rentalDate = rentalDate;
+    public BookStatus getBookStatus() {
+        return bookStatus;
     }
 
-    public LocalDate getRentRefund() {
-        return rentRefund;
+    public void setBookStatus(BookStatus bookStatus) {
+        this.bookStatus = bookStatus;
     }
 
-    public void setRentRefund(LocalDate rentRefund) {
-        this.rentRefund = rentRefund;
+    @Override
+    public String toString() {
+        return book + ", quantityBook: " + quantityBook + ", status: " + bookStatus.toString().toLowerCase();
     }
-
-    public void bookOrder(List<Book> books) {
-        this.rentedBooks.addAll(books);
-    }
-
 }
