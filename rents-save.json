@@ -1,85 +1,24 @@
 [ {
   "bookOrder" : [ {
     "book" : {
-      "author" : "Master",
-      "bookGenre" : "TERROR",
-      "isbn" : "BC4010",
-      "publisher" : "Pub",
-      "recommendAge" : "Livre",
-      "releaseDate" : "04/07/2006",
-      "title" : "Teste 2"
+      "author" : "Gustavo Guanabara",
+      "bookGenre" : "Educativo",
+      "isbn" : "ECGG290926",
+      "publisher" : "Curso em Vídeo",
+      "recommendAge" : "10 anos",
+      "releaseDate" : "15/02/2016",
+      "title" : "Curso MySQL"
     },
-    "bookStatus" : null,
+    "bookStatus" : "Alugado",
     "quantityBook" : 1
   } ],
-  "rentRefund" : "29/09/2026",
-  "rentalDate" : "21/09/2026",
-  "renter" : {
-    "age" : 20,
-    "email" : "vini@gmail",
-    "name" : "Vini"
-  }
-}, {
-  "bookOrder" : [ {
-    "book" : {
-      "author" : "Master",
-      "bookGenre" : "TERROR",
-      "isbn" : "BC4010",
-      "publisher" : "Pub",
-      "recommendAge" : "Livre",
-      "releaseDate" : "04/07/2006",
-      "title" : "Teste 2"
-    },
-    "bookStatus" : null,
-    "quantityBook" : 1
-  } ],
-  "rentRefund" : "30/09/2026",
-  "rentalDate" : "22/09/2026",
-  "renter" : {
-    "age" : 29,
-    "email" : "testenum9@gmail.com",
-    "name" : "Tester 9"
-  }
-}, {
-  "bookOrder" : [ {
-    "book" : {
-      "author" : "Master",
-      "bookGenre" : "TERROR",
-      "isbn" : "BC4010",
-      "publisher" : "Pub",
-      "recommendAge" : "Livre",
-      "releaseDate" : "04/07/2006",
-      "title" : "Teste 2"
-    },
-    "bookStatus" : null,
-    "quantityBook" : 1
-  } ],
-  "rentRefund" : "30/09/2026",
-  "rentalDate" : "22/09/2026",
-  "renter" : {
-    "age" : 30,
-    "email" : "testenum10@gmail.com",
-    "name" : "Tester 10"
-  }
-}, {
-  "bookOrder" : [ {
-    "book" : {
-      "author" : "Teste",
-      "bookGenre" : "DRAMA",
-      "isbn" : "BC1020",
-      "publisher" : "Pub",
-      "recommendAge" : "Livre",
-      "releaseDate" : "21/03/2003",
-      "title" : "Teste 1"
-    },
-    "bookStatus" : "RENTED",
-    "quantityBook" : 1
-  } ],
-  "rentRefund" : "28/09/2026",
-  "rentalDate" : "22/09/2026",
-  "renter" : {
-    "age" : 30,
-    "email" : "testenum10@gmail.com",
-    "name" : "Tester 10"
+  "deadline" : "10/10/2026",
+  "rentalDate" : "05/10/2026",
+  "user" : {
+    "name" : "João Silva",
+    "age" : 31,
+    "email" : "joaosilva@gmail.com",
+    "password" : "$2a$12$wf0hfTrYbrWTdQwkOUp3euXCrZ7ZeNId5yst7eq8A0ufWs1F65SY6",
+    "userStatus" : "GREEN"
   }
 } ]

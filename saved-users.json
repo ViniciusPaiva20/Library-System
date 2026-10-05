@@ -1,0 +1,13 @@
+[ {
+  "name" : "Tester",
+  "age" : 22,
+  "email" : "testandodenovo@dev.com",
+  "password" : "$2a$12$hTgDym5LvogXAFFKGOlUjemzD2NsC8xr6icotxKOJEU9U6GIFSHw.",
+  "userStatus" : "GREEN"
+}, {
+  "name" : "João Silva",
+  "age" : 31,
+  "email" : "joaosilva@gmail.com",
+  "password" : "$2a$12$wf0hfTrYbrWTdQwkOUp3euXCrZ7ZeNId5yst7eq8A0ufWs1F65SY6",
+  "userStatus" : "GREEN"
+} ]

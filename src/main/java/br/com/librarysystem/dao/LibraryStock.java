@@ -3,9 +3,7 @@ package br.com.librarysystem.dao;
 import br.com.librarysystem.config.JacksonMapper;
 import br.com.librarysystem.model.entities.Book;
 import br.com.librarysystem.model.entities.BookOrder;
-import br.com.librarysystem.model.entities.Renter;
 import br.com.librarysystem.model.enums.BookStatus;
-import br.com.librarysystem.services.BookRentService;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
@@ -15,13 +13,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
 
 public class LibraryStock {
 
-    //Create, Read, Update, Delete dos Livros/BookOrdes
     // Aqui que será salvo novos BookOrders/Adiciona BookOrder ao arquivo existente
     public void createNewOrderBook(Book book, int quantity, BookStatus bookStatus) {
         List<BookOrder> stockList = readBookStock();
@@ -65,9 +60,9 @@ public class LibraryStock {
         }
     }
 
-    public void  deleteBookOrder(Book book) {
+    public void  deleteBookOrder(String isbnCod) {
         List<BookOrder> stockList = readBookStock();
-        stockList.removeIf(o -> o.getBook().equals(book));
+        stockList.removeIf(o -> o.getBook().getIsbn().equals(isbnCod));
         try (BufferedWriter fileWriter = Files.newBufferedWriter(Path.of("book-stock.json"))) {
             ObjectMapper mapper = JacksonMapper.getInstance();
 
@@ -75,94 +70,59 @@ public class LibraryStock {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        System.out.println("Livro removido com sucesso! ");
     }
 
-    public Book bookSearch(String nameBook) {
+    public void bookSearch(String search, int option) {
         List<BookOrder> stockList = readBookStock();
-        Book book = stockList.stream().filter(o -> o.getBook().getTitle().equals(nameBook))
-                .findFirst().get().getBook();
-        if (book.getTitle() == null) {
-            throw new RuntimeException("Está vazio o cabeçudo");
+        switch (option) {
+            case 1:
+                for (BookOrder o: stockList) {
+                    if (o.getBook().getTitle().equals(search)) {
+                        System.out.println(o.getBook().toString());
+                    }
+                }
+                break;
+            case 2:
+                for (BookOrder o: stockList) {
+                    if (o.getBook().getIsbn().equals(search)) {
+                        System.out.println(o.getBook());
+                    }
+                }
+                break;
+            case 3:
+                for (BookOrder o: stockList) {
+                    if (o.getBook().getAuthor().equals(search)) {
+                        System.out.println(o.getBook());
+                    }
+                }
+                break;
         }
-        return book;
+    }
+
+    public Book getBookFromStock(String bookName) {
+        List<BookOrder> stock = readBookStock();
+
+        return stock.stream().filter(o -> o.getBook().getTitle().equals(bookName)).findFirst()
+                .map(BookOrder::getBook).get();
     }
 
     // Alugueis
-    public void createNewRent(BookRentService bookRent) {
-        List<BookRentService> rentList = readRents();
-        rentList.add(bookRent);
-        bookRent.rentUpdateService();
-        try (BufferedWriter fileWriter = Files.newBufferedWriter(Path.of("rents-save.json"))) {
+
+    public void bookRental(BookOrder bookOrder) {
+        List<BookOrder> stock = readBookStock();
+
+        stock.stream().filter(s -> s.getBook().equals(bookOrder.getBook())).findFirst()
+                .ifPresent(s -> s.setQuantityBook(s.getQuantityBook() -1));
+
+        try (BufferedWriter bw = Files.newBufferedWriter(Path.of("book-stock.json"))){
             ObjectMapper mapper = JacksonMapper.getInstance();
 
-            mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, rentList);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        System.out.println("Salvo com Sucesso!");
-    }
-
-    public List<BookRentService> readRents() {
-        List<BookRentService> readRents = new ArrayList<>();
-
-        try (BufferedReader br = Files.newBufferedReader(Path.of("rents-save.json"))){
-            ObjectMapper mapper = JacksonMapper.getInstance();
-
-            readRents = mapper.readValue(br, new TypeReference<List<BookRentService>>(){});
+            mapper.writerWithDefaultPrettyPrinter().writeValue(bw, stock);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
-        return readRents;
     }
 
-    public void updateRents(BookRentService bookRent) {
-        List<BookRentService> rentList = readRents();
-        rentList.add(bookRent);
-
-        try (BufferedWriter fileWriter = Files.newBufferedWriter(Path.of("rents-save.json"))) {
-            ObjectMapper mapper = JacksonMapper.getInstance();
-
-            mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, rentList);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void deleteRent() {
-        List<BookRentService> bookRent = readRents();
-        bookRent.removeIf(r -> r.getBookOrder().contains(BookStatus.RENTED));
-
-        try (BufferedWriter fileWriter = Files.newBufferedWriter(Path.of("rents-save.json"))){
-            ObjectMapper mapper = JacksonMapper.getInstance();
-
-            mapper.writerWithDefaultPrettyPrinter().writeValue(fileWriter, bookRent);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public Renter searchRenter(String email) {
-        List<BookRentService> bookRent = readRents();
-
-        Renter user = bookRent.stream().filter(r -> r.getRenter()
-                .getEmail().equals(email)).findFirst().map(BookRentService::getRenter).get();
-
-        return user;
-    }
-
-    public void bookReservation(BookRentService bookRent) {
-        bookRent.rentUpdateService();
-        updateRents(bookRent);
-    }
-
-    public Book getBookInStock(String name) {
-        List<BookOrder> bookOrders = readBookStock();
-        for (BookOrder b: bookOrders) {
-            if (b.getBook().getTitle().equals(name)) {
-                return b.getBook();
-            }
-        }
-        return null;
-    }
 }

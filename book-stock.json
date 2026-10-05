@@ -1,25 +1,37 @@
 [ {
   "book" : {
-    "author" : "Teste",
-    "bookGenre" : "DRAMA",
-    "isbn" : "BC1020",
-    "publisher" : "Pub",
-    "recommendAge" : "Livre",
-    "releaseDate" : "21/03/2003",
-    "title" : "Teste 1"
+    "author" : "Gustavo Guanabara",
+    "bookGenre" : "Educativo",
+    "isbn" : "EAGG280926",
+    "publisher" : "Curso em Vídeo",
+    "recommendAge" : "10 anos",
+    "releaseDate" : "01/04/2014",
+    "title" : "Algoritmos e Lógica de Programação"
   },
-  "bookStatus" : "IN_STOCK",
-  "quantityBook" : 1
+  "bookStatus" : "Em estoque",
+  "quantityBook" : 10
 }, {
   "book" : {
-    "author" : "Master",
-    "bookGenre" : "TERROR",
-    "isbn" : "BC4010",
-    "publisher" : "Pub",
-    "recommendAge" : "Livre",
-    "releaseDate" : "04/07/2006",
-    "title" : "Teste 2"
+    "author" : "Gustavo Guanabara",
+    "bookGenre" : "Educativo",
+    "isbn" : "ECGG290926",
+    "publisher" : "Curso em Vídeo",
+    "recommendAge" : "10 anos",
+    "releaseDate" : "15/02/2016",
+    "title" : "Curso MySQL"
   },
-  "bookStatus" : "IN_STOCK",
-  "quantityBook" : 3
+  "bookStatus" : "Em estoque",
+  "quantityBook" : 13
+}, {
+  "book" : {
+    "author" : "Gustavo Guanabara",
+    "bookGenre" : "Educativo",
+    "isbn" : "ECGC290926",
+    "publisher" : "Curso em Vídeo",
+    "recommendAge" : "10 anos",
+    "releaseDate" : "08/02/2021",
+    "title" : "Curso em Vídeo HTML5 + CSS3"
+  },
+  "bookStatus" : "Em estoque",
+  "quantityBook" : 5
 } ]
