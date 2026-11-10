@@ -1,50 +1,34 @@
 package br.com.librarysystem.model.entities;
 
-import br.com.librarysystem.model.enums.BookStatus;
-
-import java.util.Locale;
+import java.util.List;
 
 public class BookOrder {
 
-    private Book book;
-    private Integer quantityBook;
-    private BookStatus bookStatus;
+    private User user;
+    private List<Book> bookList;
 
     public BookOrder() {
     }
 
-    public BookOrder(Book book, int quantityBook, BookStatus bookStatus) {
-        this.book = book;
-        this.quantityBook = quantityBook;
-        this.bookStatus = bookStatus;
+    public BookOrder(User user) {
+        this.user = user;
     }
 
-    public Book getBook() {
-        return book;
+    public User getUser() {
+        return user;
     }
 
-    public void setBook(Book book) {
-        this.book = book;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Integer getQuantityBook() {
-        return quantityBook;
+    public List<Book> getBookList() {
+        return bookList;
     }
 
-    public void setQuantityBook(Integer quantityBook) {
-        this.quantityBook = quantityBook;
+    public void addBookList(Book book) {
+        bookList.add(book);
     }
 
-    public BookStatus getBookStatus() {
-        return bookStatus;
-    }
-
-    public void setBookStatus(BookStatus bookStatus) {
-        this.bookStatus = bookStatus;
-    }
-
-    @Override
-    public String toString() {
-        return book + ", quantityBook: " + quantityBook + ", status: " + bookStatus.toString().toLowerCase();
-    }
+    
 }

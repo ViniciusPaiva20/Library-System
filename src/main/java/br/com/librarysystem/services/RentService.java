@@ -1,73 +1,136 @@
 package br.com.librarysystem.services;
 
-import br.com.librarysystem.dao.LibraryStock;
-import br.com.librarysystem.dao.RentRegister;
+import br.com.librarysystem.config.Database;
+import br.com.librarysystem.dao.BookDao;
+import br.com.librarysystem.dao.RentOrderDao;
 import br.com.librarysystem.model.entities.*;
-import br.com.librarysystem.model.enums.BookStatus;
+import br.com.librarysystem.model.enums.RentalStatus;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 public class RentService {
 
-    private RentalRequest rentalRequest;
+    private final RentOrderDao rentDao;
+    private final BookDao bookDao;
 
-    private LibraryStock stock = new LibraryStock();
-
-    public RentService() {
-    }
-    // Construtor
-    public RentService(User user, LocalDate deadline) {
-        validateDate(LocalDate.now(), deadline);
-        rentalRequest = new RentalRequest(user, LocalDate.now(), deadline);
+    public RentService(RentOrderDao rentDao, BookDao bookDao) {
+        this.rentDao = rentDao;
+        this.bookDao = bookDao;
     }
 
-    // serviços
-    public void addBookOrder(String nameBook) {
-        Book book = stock.getBookFromStock(nameBook);
-        User user = rentalRequest.getUser();
+    public Long bookId(String isbn) {
+        return bookDao.findByIsbn(isbn).getBookId();
+    }
 
-        if (user.userAppropriateAge(book.getRecommendAge())) {
-            rentalRequest.addBookOrderList(new BookOrder(book, 1, BookStatus.RENTED));
-            System.out.println("Livro adicionado");
+    public List<RentOrder> findRent(Long userId) {
+        return rentDao.findRentByUserId(userId);
+    }
+    // CRUD simples
+    public void createNewRent(RentOrder rentOrder) {
+        rentDao.insertRentOrder(rentOrder);
+    }
+
+    public List<RentOrder> listAllRent() {
+        return rentDao.allRents();
+    }
+
+    public void updateRent(List<RentOrder> rentOrder) {
+        try (Connection connection = Database.getConnection()) {
+            connection.setAutoCommit(false);
+
+            for (RentOrder order: rentOrder) {
+                rentDao.update(order);
+            }
+            connection.commit();
+            
+            connection.setAutoCommit(true);
+            
+        } catch (SQLException ex) {
+            throw new RuntimeException();
         }
     }
 
-    public void finishRent() {
-        for (BookOrder o: rentalRequest.getBookOrder()) {
-            stock.bookRental(o);
-        }
-        // salvar esse aluguel no arquivo
-        RentRegister rentRegister = new RentRegister();
-        rentRegister.createNewRent(rentalRequest);
+    public void deleteRent(RentOrder rentOrder) {
+        rentDao.delete(rentOrder);
     }
-    // validação
-    public boolean rentExpired() {
-        LocalDate deadline = rentalRequest.getDeadline();
-        if (LocalDate.now().isEqual(deadline) || LocalDate.now().isAfter(deadline)) {
+    // métodos para serviço de alguel
+    public void returnBook(List<RentOrder> rentOrder) {
+        try (Connection connection = Database.getConnection()) {
+            connection.setAutoCommit(false);
+
+            for (RentOrder order: rentOrder) {
+                rentDao.update(order);
+                Book book = bookDao.findById(order.getBookID());
+                int quant = book.getQuantity() + order.getBookQuantity();
+                book.setQuantity(quant);
+                bookDao.update(book);
+            }
+            connection.commit();
+
+            connection.setAutoCommit(true);
+
+        } catch (SQLException ex) {
+            throw new RuntimeException();
+        }
+    }
+
+    public void rentABook(List<RentOrder> rentOrder) {
+        Connection connection = Database.getConnection();
+        try {
+            connection.setAutoCommit(false);
+
+            for (RentOrder rents: rentOrder) {
+                rentDao.insertRentOrder(rents);
+                Book book = bookDao.findById(rents.getBookID());
+                book.setQuantity(book.getQuantity() - rents.getBookQuantity());
+                bookDao.update(book);
+            }
+
+            connection.commit();
+        } catch (SQLException ex) {
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                throw new RuntimeException("Falha ao desfazer a transação", e);
+            }
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException ignored) {}
+        }
+    }
+
+    public boolean rentExpired(RentOrder rentOrder, LocalDate nowDate) {
+        LocalDate deadline = rentOrder.getDeadline();
+
+        if (rentOrder.getRentalStatus().equals(RentalStatus.LATED)) {
             return true;
-        } else {
-            return false;
         }
+        if (rentOrder.getRentalStatus().equals(RentalStatus.OPEN)) {
+            if (daysRentExpired(deadline, nowDate) > 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public int daysRentExpired() {
-        LocalDate deadline = rentalRequest.getDeadline();
-        LocalDate nowDate = LocalDate.now();
-        int count = 0;
-
+    public long daysRentExpired(LocalDate deadline, LocalDate nowDate) {
         if (nowDate.isAfter(deadline)) {
-            count = nowDate.minusDays(deadline.getDayOfMonth()).getDayOfMonth();
-            return count;
+            return ChronoUnit.DAYS.between(deadline, nowDate);
         }
-        return count;
+        return 0;
     }
 
-    private void validateDate(LocalDate startRent, LocalDate deadline) {
-        if (deadline.isBefore(LocalDate.now())) {
-            throw new RuntimeException("A data do aluguel não pode ser anterior ao dia atual!");
-        }
-        if (deadline.isEqual(startRent)) {
-            throw new RuntimeException("A data de devolução não pode ser no mesmo dia da de aluguel!");
+    public void markLated(RentOrder rentOrder) {
+        if (rentExpired(rentOrder, LocalDate.now())) {
+            rentOrder.setRentalStatus(RentalStatus.LATED);
+            rentDao.update(rentOrder);
         }
     }
 

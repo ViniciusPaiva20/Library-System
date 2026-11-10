@@ -20,24 +20,22 @@ public enum BookStatus {
         return bookStatus;
     }
 
-    // Remove acentos e ignora maiúsculas/minúsculas
-    private static String normalizar(String texto) {
-        return Normalizer.normalize(texto.trim(), Normalizer.Form.NFD)
-                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-                .toLowerCase();
+    public static BookStatus enumCorresponding(String statusString) {
+        if (statusString == null) {
+            throw new RuntimeException("O valor não pode ser nulo!");
+        }
+        String normalizedStatus = normalizeString(statusString);
+        for (BookStatus b: BookStatus.values()) {
+            if (normalizeString(b.getBookStatus()).equalsIgnoreCase(normalizedStatus)) {
+                return b;
+            }
+        }
+        return null;
     }
 
-    public static Optional<BookStatus> fromBookStatus(String texto) {
-        // Condicional if que garante que não receberá uma texto vazio
-        if (texto == null || texto.isBlank()) return Optional.empty();
-
-        String busca = normalizar(texto);
-
-        return Arrays.stream(values())
-                .filter(s -> normalizar(s.bookStatus).equals(busca)
-                        || normalizar(s.name()).equals(busca)
-                        || normalizar(s.name().replace('_', ' ')).equals(busca))
-                .findFirst();
+    // Normaliza string
+    private static String normalizeString(String texto) {
+        return Normalizer.normalize(texto.trim(), Normalizer.Form.NFC);
     }
 
     public static void allBookStatus() {

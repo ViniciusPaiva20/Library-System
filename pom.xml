@@ -59,7 +59,15 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.16.1</version>
+            <version>5.24.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito Junit Jupiter -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.24.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -69,6 +77,13 @@
             <artifactId>bcrypt</artifactId>
             <version>0.10.2</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!-- mysql connector -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.7.0</version>
         </dependency>
     </dependencies>
 

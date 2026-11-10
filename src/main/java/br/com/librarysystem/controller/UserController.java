@@ -1,17 +1,25 @@
 package br.com.librarysystem.controller;
 
 import br.com.librarysystem.model.entities.User;
+import br.com.librarysystem.security.EmailTools;
+import br.com.librarysystem.security.PasswordTools;
 import br.com.librarysystem.services.UserService;
+
+import java.time.LocalDate;
 
 public class UserController {
 
-    private UserService userService = new UserService();
+    private final UserService userService;
 
-    public User registerUser(String name, int age, String email, String password) {
-        User user = User.createUser(name, age, email, password);
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    public User registerUser(String name, LocalDate birthDate, String email, String password) {
+        User user = new User(name, birthDate, EmailTools.validateEmail(email), PasswordTools.generateHash(password));
         userService.registerNewUser(user);
 
-        return user;
+        return userService.searchUser(email, password);
     }
 
     public User userLogin(String userEmail, String userPassword) {
@@ -24,7 +32,11 @@ public class UserController {
     }
 
     public boolean userCanRentBook(User user) {
-        return userService.checkUserStatus(user);
+        if (userService.checkUserStatus(user)) {
+            return false;
+        }
+
+        return true;
     }
 
 }

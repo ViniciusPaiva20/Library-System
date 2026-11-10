@@ -1,18 +1,19 @@
 package br.com.librarysystem.model.enums;
 
 import java.text.Normalizer;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Optional;
 
 public enum BookGenre {
 
     TERROR("Terror"),
     ACTION("Ação"),
-    AVENTURA("Aventura"),
+    ADVENTURE("Aventura"),
     ROMANCE("Romance"),
     DRAMA("Drama"),
-    EDUCATIVO("Educativo"),
-    COMEDIA("Comédia");
+    EDUCATIONAL("Educativo"),
+    COMEDY("Comédia");
 
     private final String bookGenre;
 
@@ -24,25 +25,45 @@ public enum BookGenre {
         return bookGenre;
     }
 
-    // Remove acentos e ignora maiúsculas/minúsculas
-    private static String normalizar(String texto) {
-        return Normalizer.normalize(texto.trim(), Normalizer.Form.NFD)
-                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-                .toLowerCase();
+    public static BookGenre enumCorresponding(String genreString) {
+        if (genreString == null) {
+            throw new RuntimeException("O valor está nulo!");
+        }
+        // tag == tag
+        // tag == const
+        String genreNormalized = normalizeString(genreString);
+        for (BookGenre b: BookGenre.values()) {
+            if (normalizeString(b.getBookGenre()).equalsIgnoreCase(genreNormalized)) {
+                return b;
+            }
+            if (genreString.toUpperCase().equals(b.toString())) {
+                return b;
+            }
+        }
+        throw new RuntimeException("BookGenre não encontrado!");
     }
 
-    // Aceita "Comédia", "comedia", "COMEDY", "science_fiction", etc.
-    public static Optional<BookGenre> fromBookGenre(String text) {
-        // Condicional if que garante que não receberá uma texto vazio
-        if (text == null || text.isBlank()) return Optional.empty();
+    // Normaliza string
+    // metodo para pegar
+    private static BookGenre findGenre(String stringGenre) {
+        HashMap<String, BookGenre> genreList = new HashMap<>();
+        for (BookGenre genre: BookGenre.values()) {
+            genreList.put(genre.getBookGenre().toLowerCase(), genre);
 
-        String busca = normalizar(text);
+            if (stringGenre.equalsIgnoreCase(genre.toString())) {
+                return genre;
+            }
+        }
 
-        return Arrays.stream(values())
-                .filter(g -> normalizar(g.bookGenre).equals(busca)
-                        || normalizar(g.name()).equals(busca)
-                        || normalizar(g.name().replace('_', ' ')).equals(busca))
-                .findFirst();
+        if (genreList.containsKey(stringGenre.toLowerCase())) {
+            return genreList.get(stringGenre.toLowerCase());
+        }
+
+        throw new RuntimeException("Não encontrado");
+    }
+
+    private static String normalizeString(String originalWord) {
+        return Normalizer.normalize(originalWord.trim(), Normalizer.Form.NFC);
     }
 
     public static void allBookGenre() {

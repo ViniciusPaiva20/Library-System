@@ -2,36 +2,52 @@ package br.com.librarysystem.model.entities;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import br.com.librarysystem.model.enums.IndicativeRating;
+import br.com.librarysystem.model.enums.UserLevel;
 import br.com.librarysystem.model.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class User {
 
+    private Long id;
     private String name;
-    private int age;
+    private LocalDate dateBirth;
     private String email;
     private String password;
     private UserStatus userStatus;
+    private UserLevel userLevel;
 
     public User() {
     }
 
-    private User(@JsonProperty("name") String name,
-                 @JsonProperty("age") int age,
-                 @JsonProperty("email") String email,
-                 @JsonProperty("password") String password) {
+    public User(String name, LocalDate dateBirth, String email, String password) {
         this.name = name;
-        this.age = age;
+        this.dateBirth = dateBirth;
         this.email = email;
         this.password = password;
         this.userStatus = UserStatus.GREEN;
+        this.userLevel = UserLevel.COMMON;
+    }
+    // construtor para pegar usuário do banco de dados
+    public User(Long id, String name, LocalDate dateBirth, String email, String password,
+                UserStatus userStatus, UserLevel userLevel) {
+        this.id = id;
+        this.name = name;
+        this.dateBirth = dateBirth;
+        this.email = email;
+        this.password = password;
+        this.userStatus = userStatus;
+        this.userLevel = userLevel;
     }
 
-    public static User createUser(String name, int age, String email, String password) {
-        validateEmail(email);
-        return new User(name, age, email, generateHash(password));
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -42,12 +58,12 @@ public class User {
         this.name = name;
     }
 
-    public int getAge() {
-        return age;
+    public LocalDate getDateBirth() {
+        return dateBirth;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setDateBirth(LocalDate dateBirth) {
+        this.dateBirth = dateBirth;
     }
 
     public String getEmail() {
@@ -63,7 +79,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = generateHash(password);
+        this.password = password;
     }
 
     public UserStatus getUserStatus() {
@@ -74,37 +90,26 @@ public class User {
         this.userStatus = userStatus;
     }
 
-    // metodo
+    public UserLevel getUserLevel() {
+        return userLevel;
+    }
+
+    public void setUserLevel(UserLevel userLevel) {
+        this.userLevel = userLevel;
+    }
+
+    // metodos
+    // pega idade atual do usuario
+    private int getUserAge() {
+        LocalDate today = LocalDate.now();
+        return dateBirth.getYear() - today.getYear();
+    }
+
     public boolean userAppropriateAge(IndicativeRating rating) {
-        if (age >= rating.getIdadeMinima()) {
+        if (getUserAge() >= rating.getIdadeMinima()) {
             return true;
         }
         return false;
-    }
-
-    private static void validateEmail(String email) {
-        boolean valide = false;
-        for (int i = 0; i < email.length(); i++) {
-            char charEmail = email.charAt(i);
-
-            if (charEmail == '@') {
-                valide = true;
-            }
-        }
-        if (valide != true) {
-            throw new RuntimeException("Email Inválido!");
-        }
-    }
-
-    private static String generateHash(String password) {
-        if (password.length() < 8) {
-            throw new RuntimeException("A senha deve conter no mínimo 8 caracteres");
-        }
-        return BCrypt.withDefaults().hashToString(12, password.toCharArray());
-    }
-
-    public boolean validateHash(String noHashPassword) {
-        return BCrypt.verifyer().verify(noHashPassword.toCharArray(), password).verified;
     }
 
     @Override
@@ -121,6 +126,6 @@ public class User {
 
     @Override
     public String toString() {
-        return "User: " + name + ", age: " + age + ", email: " + email + "Status User: " + userStatus;
+        return "User: " + name + ", dateBirth: " + dateBirth + ", email: " + email + "Status User: " + userStatus;
     }
 }

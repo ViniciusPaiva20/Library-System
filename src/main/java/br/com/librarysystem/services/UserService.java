@@ -1,60 +1,48 @@
 package br.com.librarysystem.services;
 
-import br.com.librarysystem.dao.RentRegister;
-import br.com.librarysystem.dao.UserRecord;
+import br.com.librarysystem.dao.UserDao;
 import br.com.librarysystem.model.entities.User;
-import br.com.librarysystem.model.enums.IndicativeRating;
 import br.com.librarysystem.model.enums.UserStatus;
+import br.com.librarysystem.security.PasswordTools;
 
 public class UserService {
 
-    private UserRecord userRecord = new UserRecord();
+    private final UserDao userDao;
+
+    public UserService(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     // métodos
 
     public void registerNewUser(User user) {
-        userRecord.createUser(user);
+        if (userDao.findByEmail(user.getEmail()) != null) {
+            throw new RuntimeException("O Usuario já existe");
+        }
+        userDao.insert(user);
     }
 
     public User userLogin(String email, String password) {
-        return userRecord.searchUser(email, password);
+        User user = userDao.findByEmail(email);
+        if (PasswordTools.validateHash(user.getPassword(), password)) {
+            return user;
+        }
+        throw new RuntimeException("Senha incorreta!");
     }
 
     public User searchUser(String email, String password) {
-        return userRecord.searchUser(email, password);
+        return userDao.findByEmail(email);
     }
 
     public void deleteUser(User user, String password) {
-        userRecord.deleteUser(user, password);
-    }
-
-    public void checkUserHistory(User user) {
-        if (checkUserStatus(user)) {
-            System.out.println("O Leitor está com o histórico vermelho!");
-        } else {
-            System.out.println("O Leitor não está com o histórico vermelho.");
-            System.out.print("Seu histórico está: ");
-            if (user.getUserStatus().equals(UserStatus.YELLOW)) {
-                System.out.println("Amarelo, requer atenção!");
-            } else {
-                System.out.println("Verde, está tudo certo!");
-            }
-        }
+        userDao.delete(user);
     }
 
     public boolean checkUserStatus(User user) {
         if (user.getUserStatus().equals(UserStatus.RED)) {
-            System.out.println("O usuário está com status vermelho!");
-            return true;
-        } else {
             return false;
         }
-    }
-    // sendo trabalhado
-    public void getRentedBooks() {
-        RentRegister rentRegister = new RentRegister();
-
-        //rentedBook = rentRegister;
+        return true;
     }
 
 }
